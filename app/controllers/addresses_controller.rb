@@ -28,10 +28,10 @@ class AddressesController < ApplicationController
     @address = Address.new(address_params)
 
     respond_to do |format|
-      @address.user = @user
-        #@user.address = @address
+      #@address.user = @user
+        @user.addresses << @address
       if @address.save
-        format.html { redirect_to @user, notice: "Address was successfully created. @user.name" }
+        format.html { redirect_to @user, notice: "Address was successfully created. #{@user.name}" }
         format.json { render :show, status: :created, location: @address }
       else
         format.html { render :new }
