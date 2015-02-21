@@ -18,9 +18,9 @@
         <td><%= address.street %></td>
         <td><%= address.number %></td>
         <td><%= address.zipcode %></td>
-        <td><%= link_to 'Show', address %></td>
-        <td><%= link_to 'Edit', edit_address_path(address) %></td>
-        <td><%= link_to 'Destroy', address, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= link_to 'Show', user_address_path(@user, address) %></td>
+        <td><%= link_to 'Edit', edit_user_address_path(@user,address) %></td>
+        <td><%= link_to 'Destroy',[@user, address], method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
     <% end %>
   </tbody>

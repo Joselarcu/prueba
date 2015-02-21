@@ -1,6 +1,6 @@
 class AddressesController < ApplicationController
   before_action :set_address, only: [:show, :edit, :update, :destroy]
-  before_action :get_user, only:[:new, :create]
+  before_action :set_user, only:[:new, :create, :edit, :update, :index, :destroy]
 
   # GET /addresses
   # GET /addresses.json
@@ -25,13 +25,11 @@ class AddressesController < ApplicationController
   # POST /addresses
   # POST /addresses.json
   def create
-    @address = Address.new(address_params)
-
-    respond_to do |format|
-      #@address.user = @user
-        @user.addresses << @address
-      if @address.save
-        format.html { redirect_to @user, notice: "Address was successfully created. #{@user.name}" }
+    @address = Address.find_or_create_by(address_params)
+    respond_to do |format|     
+      if @address.persisted?
+        @user.addresses << @address unless @user.addresses.include? @address
+        format.html { redirect_to @user, notice: "Address was successfully associated" }
         format.json { render :show, status: :created, location: @address }
       else
         format.html { render :new }
@@ -45,7 +43,7 @@ class AddressesController < ApplicationController
   def update
     respond_to do |format|
       if @address.update(address_params)
-        format.html { redirect_to @address, notice: 'Address was successfully updated.' }
+        format.html { redirect_to user_path(@user), notice: 'Address was successfully updated.' }
         format.json { render :show, status: :ok, location: @address }
       else
         format.html { render :edit }
@@ -57,9 +55,9 @@ class AddressesController < ApplicationController
   # DELETE /addresses/1
   # DELETE /addresses/1.json
   def destroy
-    @address.destroy
+    @address.users.count == 1 ? @address.destroy : @user.addresses.delete(@address)
     respond_to do |format|
-      format.html { redirect_to addresses_url, notice: 'Address was successfully destroyed.' }
+      format.html { redirect_to user_path(@user), notice: 'Address was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -75,7 +73,7 @@ class AddressesController < ApplicationController
       params.require(:address).permit(:street, :number, :zipcode)
     end
 
-    def get_user
+    def set_user
       @user = User.find(params[:user_id])
     end
 end

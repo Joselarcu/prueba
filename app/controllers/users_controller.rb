@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
+
   # GET /users
   # GET /users.json
   def index
@@ -10,6 +11,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
+    @addresses = @user.addresses
   end
 
   # GET /users/new
@@ -24,18 +26,10 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    @user = User.new(:name => user_params[:name], :email => user_params[:email])
-
-    if params[:user][:address]
-      @address = Address.new(:street => params[:user][:address][:street], 
-                             :number => params[:user][:address][:number], 
-                             :zipcode =>params[:user][:address][:zipcode])
-      @address.save
-      @user.addresses << @address
-    end
+    @user = User.new(user_params)
     respond_to do |format|
       if @user.save
-        format.html { redirect_to @user, notice: "User was successfully created. #{params[:user]}" }
+        format.html { redirect_to @user, notice: "User was successfully created." }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new }
@@ -76,6 +70,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:name, :email, :addresses => [:street, :number, :zipcode] )
+      params.require(:user).permit(:name, :email )#, :addresses_attribbutes
     end
 end
